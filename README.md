@@ -30,3 +30,12 @@ This Inventory Management System provides a complete solution for managing produ
 - Transaction History - Complete audit trail of all activities
 - Auto-save - Automatic data backup
 - Responsive Design- Works on different screen resolutions
+
+
+Group Members 
+
+ Hubeyb Awol        1067/16
+ Kidanework Yirga   1152/16
+ Mahlet Chanyalewu  3963/16
+ Mena Mulugeta      1320/16
+ Murad Bzuneh       1492/16
