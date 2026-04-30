@@ -31,3 +31,31 @@ INSERT INTO products (code, name, description, category_id, supplier_id, quantit
 ('P008', 'Notebook A4',      'Ruled notebook 200 pages',                 4, 3, 200,    4.99,    2.00, 50, 'Shelf C1'),
 ('P009', 'Ballpoint Pens',   'Box of 12 blue ballpoint pens',            4, 3, 300,    6.99,    3.00, 60, 'Shelf C2'),
 ('P010', 'T-Shirt XL',       'Cotton crew-neck t-shirt XL',              3, 3,   3,   19.99,   10.00, 10, 'Shelf D1');
+
+
+
+-- Reset ID sequences to be clean and sequential (no gaps)
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- Reset users IDs
+SET @count = 0;
+UPDATE users SET id = (@count := @count + 1) ORDER BY id ASC;
+ALTER TABLE users AUTO_INCREMENT = 1;
+
+-- Reset categories IDs
+SET @count = 0;
+UPDATE categories SET id = (@count := @count + 1) ORDER BY id ASC;
+ALTER TABLE categories AUTO_INCREMENT = 1;
+
+-- Reset suppliers IDs
+SET @count = 0;
+UPDATE suppliers SET id = (@count := @count + 1) ORDER BY id ASC;
+ALTER TABLE suppliers AUTO_INCREMENT = 1;
+
+-- Reset products IDs
+SET @count = 0;
+UPDATE products SET id = (@count := @count + 1) ORDER BY id ASC;
+ALTER TABLE products AUTO_INCREMENT = 1;
+
+SET FOREIGN_KEY_CHECKS = 1;
