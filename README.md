@@ -1,11 +1,13 @@
 # Inventory-Management-System
+
 A comprehensive, GUI-based Inventory Management System built with Java Swing and MySQL database. Designed for small to medium-sized businesses to efficiently manage their inventory, track stock levels, handle transactions, and generate reports.
 
 # Overview
 
-This Inventory Management System provides a complete solution for managing product inventory, tracking stock movements, handling suppliers, and generating business intelligence reports. The system features a user-friendly graphical interface and robust database backend for data persistence.
+This Inventory Management System offers a comprehensive solution for managing product inventory, tracking stock movements, handling supplier information, and generating business intelligence reports. It features a user-friendly graphical interface along with a robust database backend to ensure reliable data storage and persistence.
 
 # Target Users:
+
 - Warehouse Managers
 - Retail Store Owners
 - Inventory Controllers
@@ -14,6 +16,7 @@ This Inventory Management System provides a complete solution for managing produ
 # Features
 
 # Core Features
+
 - User Authentication - Secure login with role-based access control
 - Product Management - Add, edit, delete, and search products
 - Stock Management - Real-time inventory tracking with low stock alerts
@@ -24,9 +27,17 @@ This Inventory Management System provides a complete solution for managing produ
 - Data Export - Export data to CSV, PDF, and Excel formats
 
 # Advanced Features
+
 - Low Stock Notifications - Automatic alerts when stock falls below threshold
 - Dashboard Analytics - Visual charts for inventory trends
 - Advanced Search - Multi-criteria product search
 - Transaction History - Complete audit trail of all activities
 - Auto-save - Automatic data backup
 - Responsive Design- Works on different screen resolutions
+
+Group Members
+Hubeyb Awol 1067/16
+Kidanework Yirga 1152/16
+Mahlet Chanyalewu 3963/16
+Mena Mulugeta 1320/16
+Murad Bzuneh 1492/16
