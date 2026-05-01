@@ -33,7 +33,6 @@ This Inventory Management System provides a complete solution for managing produ
 
 
 Group Members 
-
  Hubeyb Awol        1067/16
  Kidanework Yirga   1152/16
  Mahlet Chanyalewu  3963/16
