@@ -1,81 +1,67 @@
 package com.inventory.model;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 
+/**
+ * Model class representing a stock transaction (IN / OUT / ADJUST).
+ */
 public class Transaction {
     private int id;
     private String transactionCode;
-    private String type; // STOCK_IN, STOCK_OUT, ADJUSTMENT
+    private String type;
     private int productId;
+    private String productName;
+    private String productCode;
     private int quantity;
-    private double price;
-    private double totalAmount;
+    private BigDecimal price;
+    private BigDecimal totalAmount;
     private int userId;
+    private String username;
     private String notes;
-    private String status;
-    private LocalDateTime transactionDate;
-    private LocalDateTime createdAt;
-    
-    // Constructors
-    public Transaction() {
-        this.status = "COMPLETED";
-        this.transactionDate = LocalDateTime.now();
-        this.createdAt = LocalDateTime.now();
-    }
-    
-    public Transaction(String type, int productId, int quantity, double price, int userId) {
-        this();
-        this.type = type;
-        this.productId = productId;
-        this.quantity = quantity;
-        this.price = price;
-        this.userId = userId;
-        this.totalAmount = quantity * price;
-        this.transactionCode = generateTransactionCode();
-    }
-    
-    private String generateTransactionCode() {
-        return "TRX-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-    }
-    
-    // Getters
+    private Timestamp transactionDate;
+
+    public Transaction() {}
+
     public int getId() { return id; }
-    public String getTransactionCode() { return transactionCode; }
-    public String getType() { return type; }
-    public int getProductId() { return productId; }
-    public int getQuantity() { return quantity; }
-    public double getPrice() { return price; }
-    public double getTotalAmount() { return totalAmount; }
-    public int getUserId() { return userId; }
-    public String getNotes() { return notes; }
-    public String getStatus() { return status; }
-    public LocalDateTime getTransactionDate() { return transactionDate; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    
-    // Setters
     public void setId(int id) { this.id = id; }
+
+    public String getTransactionCode() { return transactionCode; }
     public void setTransactionCode(String transactionCode) { this.transactionCode = transactionCode; }
+
+    public String getType() { return type; }
     public void setType(String type) { this.type = type; }
+
+    public int getProductId() { return productId; }
     public void setProductId(int productId) { this.productId = productId; }
-    public void setQuantity(int quantity) { 
-        this.quantity = quantity;
-        this.totalAmount = this.quantity * this.price;
-    }
-    public void setPrice(double price) {
-        this.price = price;
-        this.totalAmount = this.quantity * this.price;
-    }
-    public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
+
+    public String getProductName() { return productName; }
+    public void setProductName(String productName) { this.productName = productName; }
+
+    public String getProductCode() { return productCode; }
+    public void setProductCode(String productCode) { this.productCode = productCode; }
+
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
+
+    public BigDecimal getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
+
+    public int getUserId() { return userId; }
     public void setUserId(int userId) { this.userId = userId; }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
-    public void setStatus(String status) { this.status = status; }
-    public void setTransactionDate(LocalDateTime transactionDate) { this.transactionDate = transactionDate; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    
+
+    public Timestamp getTransactionDate() { return transactionDate; }
+    public void setTransactionDate(Timestamp transactionDate) { this.transactionDate = transactionDate; }
+
     @Override
-    public String toString() {
-        return String.format("%s - %s: %d units @ $%.2f", 
-                           transactionCode, type, quantity, price);
-    }
+    public String toString() { return transactionCode + " [" + type + "]"; }
 }
