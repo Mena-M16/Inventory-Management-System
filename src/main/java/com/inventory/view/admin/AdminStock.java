@@ -214,3 +214,4 @@ public class AdminStock extends JPanel {
     /** Public refresh callable from MainWindow F5. */
     public void refresh() { loadTransactions(); }
 }
+
