@@ -1,4 +1,4 @@
-git package com.inventory.view.admin;
+package com.inventory.view.admin;
 
 import com.inventory.controller.ProductController;
 import com.inventory.controller.StockController;
@@ -89,9 +89,35 @@ public class AdminStock extends JPanel {
         JPanel histHeader = new JPanel(new BorderLayout());
         histHeader.setOpaque(false);
         histHeader.add(ThemeUtil.sectionTitle("Transaction History"), BorderLayout.WEST);
-        JButton exportBtn = ThemeUtil.secondaryButton("Export CSV");
+
+        JPanel histBtns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        histBtns.setOpaque(false);
+        JButton refreshBtn = ThemeUtil.secondaryButton("⟳  Refresh");
+        JButton exportBtn  = ThemeUtil.secondaryButton("Export CSV");
+        refreshBtn.addActionListener(e -> {
+            refreshBtn.setEnabled(false);
+            refreshBtn.setText("Refreshing...");
+            // Refresh product combo and transactions
+            SwingWorker<List<Product>, Void> w = new SwingWorker<>() {
+                @Override protected List<Product> doInBackground() { return productCtrl.getActiveProducts(); }
+                @Override protected void done() {
+                    try {
+                        productCombo.removeAllItems();
+                        for (Product prod : get()) productCombo.addItem(prod);
+                        updateCurrentQty();
+                        loadTransactions();
+                    } catch (Exception ex) { /* ignore */ } finally {
+                        refreshBtn.setEnabled(true);
+                        refreshBtn.setText("⟳  Refresh");
+                    }
+                }
+            };
+            w.execute();
+        });
         exportBtn.addActionListener(e -> ExportUtils.exportToCSV(this, txTableModel, "transactions"));
-        histHeader.add(exportBtn, BorderLayout.EAST);
+        histBtns.add(refreshBtn);
+        histBtns.add(exportBtn);
+        histHeader.add(histBtns, BorderLayout.EAST);
         historyCard.add(histHeader, BorderLayout.NORTH);
 
         txTableModel = new DefaultTableModel(TX_COLS, 0) {
