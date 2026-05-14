@@ -138,7 +138,8 @@ public class TransactionDAO {
         return 0;
     }
 
-    /** Returns monthly transaction counts for the last 6 months (for charts). */
+   /** Returns monthly transaction counts for the last 6 months for dashboard charts. */
+
     public List<Object[]> getMonthlySummary() {
         List<Object[]> result = new ArrayList<>();
         String sql = "SELECT DATE_FORMAT(transaction_date,'%b %Y') AS month, COUNT(*) AS cnt " +
