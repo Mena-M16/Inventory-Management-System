@@ -63,7 +63,9 @@ public class TransactionDAO {
 
     public List<Transaction> findByDateRange(Timestamp from, Timestamp to) {
         List<Transaction> list = new ArrayList<>();
-        String sql = SELECT_BASE + "WHERE t.transaction_date BETWEEN ? AND ? ORDER BY t.transaction_date DESC";
+        String sql = SELECT_BASE + 
+            "WHERE DATE(t.transaction_date) >= DATE(?) AND DATE(t.transaction_date) <= DATE(?) " +
+            "ORDER BY t.transaction_date ASC";
         Connection conn = null;
         try {
             conn = db.getConnection();
@@ -138,8 +140,7 @@ public class TransactionDAO {
         return 0;
     }
 
-   /** Returns monthly transaction counts for the last 6 months for dashboard charts. */
-
+    /** Returns monthly transaction counts for the last 6 months (for charts). */
     public List<Object[]> getMonthlySummary() {
         List<Object[]> result = new ArrayList<>();
         String sql = "SELECT DATE_FORMAT(transaction_date,'%b %Y') AS month, COUNT(*) AS cnt " +
