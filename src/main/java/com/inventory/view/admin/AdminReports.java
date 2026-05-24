@@ -32,6 +32,7 @@ public class AdminReports extends JPanel {
         setBackground(ThemeUtil.BG_LIGHT);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         buildUI();
+        // Don't auto-generate on load — wait for user to click Generate
         generateReport();
     }
 

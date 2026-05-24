@@ -4,33 +4,33 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 /**
- * Model class representing a stock transaction (IN / OUT / ADJUST).
+ * Model class representing a sales transaction.
  */
-public class Transaction {
+public class Sale {
     private int id;
-    private String transactionCode;
-    private String type;
+    private String saleCode;
     private int productId;
     private String productName;
     private String productCode;
     private int quantity;
-    private BigDecimal price;
+    private BigDecimal unitPrice;
     private BigDecimal totalAmount;
+    private BigDecimal discountPercent;
+    private BigDecimal vatPercent;
+    private BigDecimal finalAmount;
+    private String customerName;
     private int userId;
     private String username;
     private String notes;
-    private Timestamp transactionDate;
+    private Timestamp saleDate;
 
-    public Transaction() {}
+    public Sale() {}
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
-    public String getTransactionCode() { return transactionCode; }
-    public void setTransactionCode(String transactionCode) { this.transactionCode = transactionCode; }
-
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
+    public String getSaleCode() { return saleCode; }
+    public void setSaleCode(String saleCode) { this.saleCode = saleCode; }
 
     public int getProductId() { return productId; }
     public void setProductId(int productId) { this.productId = productId; }
@@ -44,11 +44,23 @@ public class Transaction {
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
 
-    public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
+    public BigDecimal getUnitPrice() { return unitPrice; }
+    public void setUnitPrice(BigDecimal unitPrice) { this.unitPrice = unitPrice; }
 
     public BigDecimal getTotalAmount() { return totalAmount; }
     public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
+
+    public BigDecimal getDiscountPercent() { return discountPercent; }
+    public void setDiscountPercent(BigDecimal discountPercent) { this.discountPercent = discountPercent; }
+
+    public BigDecimal getVatPercent() { return vatPercent; }
+    public void setVatPercent(BigDecimal vatPercent) { this.vatPercent = vatPercent; }
+
+    public BigDecimal getFinalAmount() { return finalAmount; }
+    public void setFinalAmount(BigDecimal finalAmount) { this.finalAmount = finalAmount; }
+
+    public String getCustomerName() { return customerName; }
+    public void setCustomerName(String customerName) { this.customerName = customerName; }
 
     public int getUserId() { return userId; }
     public void setUserId(int userId) { this.userId = userId; }
@@ -59,9 +71,9 @@ public class Transaction {
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
 
-    public Timestamp getTransactionDate() { return transactionDate; }
-    public void setTransactionDate(Timestamp transactionDate) { this.transactionDate = transactionDate; }
+    public Timestamp getSaleDate() { return saleDate; }
+    public void setSaleDate(Timestamp saleDate) { this.saleDate = saleDate; }
 
     @Override
-    public String toString() { return transactionCode + " [" + type + "]"; }
+    public String toString() { return saleCode + " - " + productName; }
 }
