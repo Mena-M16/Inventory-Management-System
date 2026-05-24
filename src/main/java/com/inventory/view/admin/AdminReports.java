@@ -1,19 +1,31 @@
 package com.inventory.view.admin;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.table.DefaultTableModel;
+
 import com.inventory.controller.ReportController;
 import com.inventory.model.Product;
 import com.inventory.model.Transaction;
 import com.inventory.utils.ExportUtils;
 import com.inventory.utils.PDFGenerator;
 import com.inventory.view.components.ThemeUtil;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Reports panel with inventory, low-stock, and transaction reports.
@@ -33,7 +45,6 @@ public class AdminReports extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         buildUI();
         // Don't auto-generate on load — wait for user to click Generate
-        generateReport();
     }
 
     private void buildUI() {
