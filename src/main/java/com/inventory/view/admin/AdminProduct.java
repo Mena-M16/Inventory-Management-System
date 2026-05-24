@@ -2,12 +2,14 @@ package com.inventory.view.admin;
 
 import com.inventory.controller.CategoryController;
 import com.inventory.controller.ProductController;
+import com.inventory.controller.StockController;
 import com.inventory.controller.SupplierController;
 import com.inventory.model.Category;
 import com.inventory.model.Product;
 import com.inventory.model.Supplier;
 import com.inventory.utils.ExportUtils;
 import com.inventory.utils.NotificationUtils;
+import com.inventory.view.components.PaginatedTable;
 import com.inventory.view.components.ThemeUtil;
 
 import javax.swing.*;
@@ -26,10 +28,11 @@ public class AdminProducts extends JPanel {
     private final ProductController productCtrl = new ProductController();
     private final CategoryController categoryCtrl = new CategoryController();
     private final SupplierController supplierCtrl = new SupplierController();
+    private final StockController stockCtrl = new StockController();
 
-    private DefaultTableModel tableModel;
+    private PaginatedTable paginatedTable;
     private JTable table;
-    private TableRowSorter<DefaultTableModel> sorter;
+    private DefaultTableModel tableModel;
     private JTextField searchField;
     private List<Product> currentProducts;
 
@@ -56,7 +59,7 @@ public class AdminProducts extends JPanel {
         searchIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 14));
         searchField = new JTextField(22);
         searchField.setFont(ThemeUtil.FONT_BODY);
-        searchField.setPreferredSize(new Dimension(260, 36));
+        searchField.setPreferredSize(new Dimension(160, 36));
         searchField.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(ThemeUtil.BORDER_COLOR),
             BorderFactory.createEmptyBorder(6, 10, 6, 10)
@@ -73,13 +76,27 @@ public class AdminProducts extends JPanel {
         // Buttons on the right
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         btnPanel.setOpaque(false);
-        JButton addBtn     = ThemeUtil.successButton("+ Add Product");
+        JButton addBtn     = ThemeUtil.successButton("+ Product");
+        JButton addStockBtn = ThemeUtil.primaryButton("+ Stock");
+        JButton sellBtn    = ThemeUtil.warningButton("Sell");
         JButton editBtn    = ThemeUtil.primaryButton("Edit");
         JButton deleteBtn  = ThemeUtil.dangerButton("Delete");
-        JButton exportBtn  = ThemeUtil.secondaryButton("Export CSV");
+        JButton exportBtn  = ThemeUtil.secondaryButton("Export");
         JButton refreshBtn = ThemeUtil.secondaryButton("Refresh");
 
+        // Make all buttons same compact size
+        Dimension btnSize = new Dimension(85, 32);
+        addBtn.setPreferredSize(btnSize);
+        addStockBtn.setPreferredSize(btnSize);
+        sellBtn.setPreferredSize(btnSize);
+        editBtn.setPreferredSize(btnSize);
+        deleteBtn.setPreferredSize(btnSize);
+        exportBtn.setPreferredSize(btnSize);
+        refreshBtn.setPreferredSize(btnSize);
+
         addBtn.addActionListener(e -> showProductDialog(null));
+        addStockBtn.addActionListener(e -> showAddStockDialog());
+        sellBtn.addActionListener(e -> navigateToSales());
         editBtn.addActionListener(e -> editSelected());
         deleteBtn.addActionListener(e -> deleteSelected());
         exportBtn.addActionListener(e -> ExportUtils.exportToCSV(this, tableModel, "products"));
@@ -88,6 +105,8 @@ public class AdminProducts extends JPanel {
         btnPanel.add(refreshBtn);
         btnPanel.add(exportBtn);
         btnPanel.add(addBtn);
+        btnPanel.add(addStockBtn);
+        btnPanel.add(sellBtn);
         btnPanel.add(editBtn);
         btnPanel.add(deleteBtn);
         toolbar.add(btnPanel, BorderLayout.EAST);
@@ -101,14 +120,17 @@ public class AdminProducts extends JPanel {
         ThemeUtil.styleTable(table);
         table.getColumnModel().getColumn(0).setPreferredWidth(80);
         table.getColumnModel().getColumn(1).setPreferredWidth(180);
-        table.getColumnModel().getColumn(4).setMaxWidth(70);
-        table.getColumnModel().getColumn(5).setMaxWidth(90);
+        // Paginated table
+        paginatedTable = new PaginatedTable(COLUMNS);
+        paginatedTable.setColumnPreferredWidth(0, 80);
+        paginatedTable.setColumnPreferredWidth(1, 180);
+        paginatedTable.setColumnMaxWidth(4, 70);
+        paginatedTable.setColumnMaxWidth(5, 90);
+        table = paginatedTable.getTable();
+        tableModel = paginatedTable.getModel();
 
-        sorter = new TableRowSorter<>(tableModel);
-        table.setRowSorter(sorter);
-
-        // Status column renderer with badge style
-        table.getColumnModel().getColumn(6).setCellRenderer(new DefaultTableCellRenderer() {
+        // Status column badge renderer
+        paginatedTable.setColumnRenderer(6, new DefaultTableCellRenderer() {
             @Override public Component getTableCellRendererComponent(JTable t, Object value,
                     boolean sel, boolean focus, int row, int col) {
                 JLabel lbl = new JLabel(value == null ? "" : value.toString());
@@ -128,10 +150,7 @@ public class AdminProducts extends JPanel {
             }
         });
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBorder(BorderFactory.createLineBorder(ThemeUtil.BORDER_COLOR));
-        scrollPane.getViewport().setBackground(Color.WHITE);
-        add(scrollPane, BorderLayout.CENTER);
+        add(paginatedTable, BorderLayout.CENTER);
 
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F5"), "refresh");
         getActionMap().put("refresh", new AbstractAction() {
@@ -172,20 +191,21 @@ public class AdminProducts extends JPanel {
     }
 
     private void populateTable(List<Product> products) {
-        tableModel.setRowCount(0);
+        paginatedTable.clearData();
         for (Product p : products) {
-            tableModel.addRow(new Object[]{
+            paginatedTable.addRow(new Object[]{
                 p.getCode(), p.getName(),
                 p.getCategoryName(), p.getSupplierName(),
                 p.getQuantity(), String.format("$%.2f", p.getPrice()),
                 p.getStockStatus()
             });
         }
+        paginatedTable.renderPage();
     }
 
     private void filterTable() {
         String text = searchField.getText().trim();
-        sorter.setRowFilter(text.isEmpty() ? null : RowFilter.regexFilter("(?i)" + text, 0, 1, 2));
+        paginatedTable.setFilter(text, 0, 1, 2);
     }
 
     private void editSelected() {
@@ -209,11 +229,18 @@ public class AdminProducts extends JPanel {
 
     private void showProductDialog(Product existing) {
         boolean isEdit = existing != null;
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this),
+        Window parentWindow = SwingUtilities.getWindowAncestor(this);
+        JDialog overlay = ThemeUtil.showBlurOverlay(parentWindow);
+
+        JDialog dialog = new JDialog(parentWindow,
                 isEdit ? "Edit Product" : "Add New Product", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setSize(620, 620);
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(new BorderLayout());
+        dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override public void windowClosed(java.awt.event.WindowEvent e) { overlay.dispose(); }
+            @Override public void windowClosing(java.awt.event.WindowEvent e) { overlay.dispose(); }
+        });
 
         // Header bar
         JPanel header = new JPanel(new BorderLayout());
@@ -319,7 +346,7 @@ public class AdminProducts extends JPanel {
         JButton cancelBtn = ThemeUtil.secondaryButton("Cancel");
         JButton saveBtn   = ThemeUtil.primaryButton(isEdit ? "Update Product" : "Save Product");
         saveBtn.setPreferredSize(new Dimension(150, 36));
-        cancelBtn.addActionListener(e -> dialog.dispose());
+        cancelBtn.addActionListener(e -> { overlay.dispose(); dialog.dispose(); });
 
         saveBtn.addActionListener(e -> {
             Product p = isEdit ? existing : new Product();
@@ -340,6 +367,7 @@ public class AdminProducts extends JPanel {
             String err = isEdit ? productCtrl.updateProduct(p) : productCtrl.addProduct(p);
             if (err == null) {
                 NotificationUtils.showSuccess(AdminProducts.this, isEdit ? "Product updated." : "Product added.");
+                overlay.dispose();
                 dialog.dispose();
                 loadProducts();
             } else {
@@ -352,4 +380,127 @@ public class AdminProducts extends JPanel {
         dialog.add(footer, BorderLayout.SOUTH);
         dialog.setVisible(true);
     }
+
+    /** Navigates to the Sales page by firing an action up to MainWindow. */
+    private void navigateToSales() {
+        // Walk up the component tree to find MainWindow and trigger showPanel("sales")
+        Container parent = getParent();
+        while (parent != null) {
+            if (parent instanceof com.inventory.view.MainWindow) {
+                ((com.inventory.view.MainWindow) parent).showSalesPanel();
+                return;
+            }
+            parent = parent.getParent();
+        }
+    }
+
+    /** Shows Add Stock dialog — records a Stock IN transaction for selected product. */
+    private void showAddStockDialog() {
+        int row = table.getSelectedRow();
+        Product preselected = null;
+        if (row >= 0) {
+            int modelRow = table.convertRowIndexToModel(row);
+            if (modelRow < currentProducts.size()) preselected = currentProducts.get(modelRow);
+        }
+
+        Window parentWindow = SwingUtilities.getWindowAncestor(this);
+        JDialog stockOverlay = ThemeUtil.showBlurOverlay(parentWindow);
+
+        JDialog dialog = new JDialog(parentWindow, "Add Stock", Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setSize(420, 340);
+        dialog.setLocationRelativeTo(this);
+        dialog.setLayout(new BorderLayout());
+        dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override public void windowClosed(java.awt.event.WindowEvent e) { stockOverlay.dispose(); }
+            @Override public void windowClosing(java.awt.event.WindowEvent e) { stockOverlay.dispose(); }
+        });
+
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBackground(ThemeUtil.PRIMARY);
+        header.setBorder(BorderFactory.createEmptyBorder(14, 20, 14, 20));
+        JLabel title = new JLabel("\uD83D\uDCE6  Add Stock (Stock IN)");
+        title.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        title.setForeground(Color.WHITE);
+        header.add(title);
+        dialog.add(header, BorderLayout.NORTH);
+
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setBackground(Color.WHITE);
+        form.setBorder(BorderFactory.createEmptyBorder(20, 24, 20, 24));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(8, 4, 8, 4);
+
+        JComboBox<Product> productCombo = new JComboBox<>(
+            currentProducts != null ? currentProducts.toArray(new Product[0]) : new Product[0]);
+        productCombo.setFont(ThemeUtil.FONT_BODY);
+        if (preselected != null) {
+            for (int i = 0; i < currentProducts.size(); i++) {
+                if (currentProducts.get(i).getId() == preselected.getId()) {
+                    productCombo.setSelectedIndex(i); break;
+                }
+            }
+        }
+
+        JTextField qtyField = ThemeUtil.createTextField(10);
+        JTextField notesField = ThemeUtil.createTextField(15);
+
+        JLabel stockLbl = new JLabel();
+        stockLbl.setFont(ThemeUtil.FONT_BOLD);
+        productCombo.addActionListener(e -> {
+            Product p = (Product) productCombo.getSelectedItem();
+            if (p != null) stockLbl.setText("Current Stock: " + p.getQuantity() + " units");
+        });
+        Product sel = (Product) productCombo.getSelectedItem();
+        if (sel != null) stockLbl.setText("Current Stock: " + sel.getQuantity() + " units");
+        stockLbl.setForeground(ThemeUtil.PRIMARY);
+
+        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.35;
+        form.add(new JLabel("Product:") {{ setFont(ThemeUtil.FONT_BOLD); }}, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.65;
+        form.add(productCombo, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 2;
+        form.add(stockLbl, gbc);
+        gbc.gridwidth = 1;
+
+        gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.35;
+        form.add(new JLabel("Quantity:") {{ setFont(ThemeUtil.FONT_BOLD); }}, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.65;
+        form.add(qtyField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0.35;
+        form.add(new JLabel("Notes:") {{ setFont(ThemeUtil.FONT_BOLD); }}, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.65;
+        form.add(notesField, gbc);
+
+        dialog.add(form, BorderLayout.CENTER);
+
+        JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        footer.setBackground(new Color(248, 250, 252));
+        footer.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, ThemeUtil.BORDER_COLOR));
+        JButton cancelBtn = ThemeUtil.secondaryButton("Cancel");
+        JButton addBtn    = ThemeUtil.primaryButton("Add Stock");
+        cancelBtn.addActionListener(e -> dialog.dispose());
+        addBtn.addActionListener(e -> {
+            Product p = (Product) productCombo.getSelectedItem();
+            if (p == null) { NotificationUtils.showError(dialog, "Select a product."); return; }
+            int qty;
+            try { qty = Integer.parseInt(qtyField.getText().trim()); if (qty <= 0) throw new NumberFormatException(); }
+            catch (NumberFormatException ex) { NotificationUtils.showError(dialog, "Enter a valid quantity."); return; }
+            String err = stockCtrl.processStock(p.getId(), "IN", qty, notesField.getText().trim());
+            if (err == null) {
+                NotificationUtils.showSuccess(AdminProducts.this, "Stock added: +" + qty + " units for " + p.getName());
+                dialog.dispose();
+                loadProducts();
+            } else {
+                NotificationUtils.showError(dialog, err);
+            }
+        });
+        footer.add(cancelBtn);
+        footer.add(addBtn);
+        dialog.add(footer, BorderLayout.SOUTH);
+        dialog.setVisible(true);
+    }
+
 }
