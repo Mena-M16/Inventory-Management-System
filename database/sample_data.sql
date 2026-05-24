@@ -33,6 +33,13 @@ INSERT INTO products (code, name, description, category_id, supplier_id, quantit
 ('P010', 'T-Shirt XL',       'Cotton crew-neck t-shirt XL',              3, 3,   3,   19.99,   10.00, 10, 'Shelf D1');
 
 
+-- Additional sample products
+INSERT INTO products (code, name, description, category_id, supplier_id, quantity, price, cost_price, reorder_level, location) VALUES
+('P011', 'Desk Lamp',      'LED desk lamp with USB charging port', 1, 1, 45,  39.99,  20.00, 10, 'Shelf A6'),
+('P012', 'Filing Cabinet', '3-drawer steel filing cabinet',        2, 2,  8, 149.99,  90.00,  3, 'Shelf B3'),
+('P013', 'Printer Paper',  'A4 80gsm printer paper 500 sheets',    4, 3, 500,  8.99,   4.00, 100, 'Shelf C3'),
+('P014', 'Webcam HD',      '1080p HD webcam with microphone',      1, 1,  30,  59.99,  35.00, 10, 'Shelf A7'),
+('P015', 'Office Desk',    'L-shaped corner office desk',          2, 2,   5, 349.99, 220.00,  2, 'Shelf B4');
 
 -- Reset ID sequences to be clean and sequential (no gaps)
 
