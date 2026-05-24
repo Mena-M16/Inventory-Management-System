@@ -95,12 +95,14 @@ public class MainWindow extends JFrame {
         sidebar.addItem("\uD83D\uDCCA", "Stock",        "stock",       e -> showPanel("stock"));
 
         if ("ADMIN".equals(role) || "MANAGER".equals(role)) {
+            sidebar.addItem("\uD83D\uDED2", "Sales",       "sales",       e -> showPanel("sales"));
             sidebar.addItem("\uD83D\uDCC8", "Reports",     "reports",     e -> showPanel("reports"));
             sidebar.addItem("\uD83D\uDE9A", "Suppliers",   "suppliers",   e -> showPanel("suppliers"));
             sidebar.addItem("\uD83C\uDFF7", "Categories",  "categories",  e -> showPanel("categories"));
         }
 
         if ("STAFF".equals(role)) {
+            sidebar.addItem("\uD83D\uDED2", "Sales",       "sales",       e -> showPanel("sales"));
             sidebar.addItem("\uD83D\uDCCB", "Transactions","transactions",e -> showPanel("transactions"));
         }
 
@@ -123,6 +125,7 @@ public class MainWindow extends JFrame {
                 contentPanel.add(new AdminDashboard(),   "dashboard");
                 contentPanel.add(new AdminProducts(),    "products");
                 contentPanel.add(new AdminStock(),       "stock");
+                contentPanel.add(new AdminSales(),       "sales");
                 contentPanel.add(new AdminReports(),     "reports");
                 contentPanel.add(new AdminSuppliers(),   "suppliers");
                 contentPanel.add(new AdminCategories(),  "categories");
@@ -134,6 +137,7 @@ public class MainWindow extends JFrame {
                 contentPanel.add(new ManagerDashboard(),   "dashboard");
                 contentPanel.add(new ManagerProducts(),    "products");
                 contentPanel.add(new ManagerStock(),       "stock");
+                contentPanel.add(new AdminSales(),         "sales");
                 contentPanel.add(new ManagerReports(),     "reports");
                 contentPanel.add(new ManagerSuppliers(),   "suppliers");
                 contentPanel.add(new ManagerCategories(),  "categories");
@@ -142,9 +146,15 @@ public class MainWindow extends JFrame {
                 contentPanel.add(new StaffDashboard(),     "dashboard");
                 contentPanel.add(new StaffProducts(),      "products");
                 contentPanel.add(new StaffStock(),         "stock");
+                contentPanel.add(new StaffSales(),         "sales");
                 contentPanel.add(new StaffTransactions(),  "transactions");
                 break;
         }
+    }
+
+    /** Public method so other panels can navigate to the Sales page. */
+    public void showSalesPanel() {
+        showPanel("sales");
     }
 
     private void showPanel(String key) {
@@ -156,6 +166,7 @@ public class MainWindow extends JFrame {
         if ("dashboard".equals(key))         title = "Dashboard";
         else if ("products".equals(key))     title = "Product Management";
         else if ("stock".equals(key))        title = "Stock Management";
+        else if ("sales".equals(key))        title = "Sales";
         else if ("reports".equals(key))      title = "Reports";
         else if ("suppliers".equals(key))    title = "Supplier Management";
         else if ("categories".equals(key))   title = "Category Management";
