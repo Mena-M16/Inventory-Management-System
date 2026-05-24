@@ -159,4 +159,4 @@ public class StaffDashboard extends JPanel {
         parent.add(card);
         return valueLbl;
     }
-}
+    }
