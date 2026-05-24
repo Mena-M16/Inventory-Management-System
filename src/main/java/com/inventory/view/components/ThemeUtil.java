@@ -1,44 +1,61 @@
 package com.inventory.view.components;
 
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Window;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
-import java.awt.*;
 
 /**
  * Centralised theme constants and helper methods for consistent UI styling.
  */
 public class ThemeUtil {
 
-    // Modern colour palette
-    public static final Color PRIMARY       = new Color(67, 97, 238);
-    public static final Color PRIMARY_DARK  = new Color(48, 72, 200);
-    public static final Color PRIMARY_LIGHT = new Color(235, 238, 255);
-    public static final Color SUCCESS       = new Color(34, 197, 94);
-    public static final Color SUCCESS_DARK  = new Color(22, 163, 74);
-    public static final Color WARNING       = new Color(251, 146, 60);
-    public static final Color WARNING_DARK  = new Color(234, 88, 12);
-    public static final Color DANGER        = new Color(239, 68, 68);
-    public static final Color DANGER_DARK   = new Color(220, 38, 38);
+    // Modern 4-color palette
+    public static final Color PRIMARY       = new Color(37, 99, 235);   // Blue
+    public static final Color PRIMARY_DARK  = new Color(29, 78, 216);
+    public static final Color PRIMARY_LIGHT = new Color(219, 234, 254);
+    public static final Color SUCCESS       = new Color(22, 163, 74);   // Green
+    public static final Color SUCCESS_DARK  = new Color(15, 118, 54);
+    public static final Color WARNING       = new Color(217, 119, 6);   // Amber
+    public static final Color WARNING_DARK  = new Color(180, 83, 9);
+    public static final Color DANGER        = new Color(220, 38, 38);   // Red
+    public static final Color DANGER_DARK   = new Color(185, 28, 28);
     public static final Color SIDEBAR_BG    = new Color(15, 23, 42);
     public static final Color SIDEBAR_FG    = new Color(148, 163, 184);
     public static final Color SIDEBAR_SEL   = new Color(30, 41, 59);
     public static final Color SIDEBAR_HOVER = new Color(30, 41, 59);
-    public static final Color BG_LIGHT      = new Color(241, 245, 249);
+    public static final Color BG_LIGHT      = new Color(248, 250, 252);
     public static final Color CARD_BG       = Color.WHITE;
     public static final Color TEXT_PRIMARY  = new Color(15, 23, 42);
     public static final Color TEXT_MUTED    = new Color(100, 116, 139);
     public static final Color BORDER_COLOR  = new Color(226, 232, 240);
-    public static final Color TABLE_HEADER  = new Color(67, 97, 238);
+    public static final Color TABLE_HEADER  = new Color(37, 99, 235);
     public static final Color TABLE_ALT     = new Color(248, 250, 252);
-    public static final Color ACCENT        = new Color(139, 92, 246);
+    public static final Color ACCENT        = new Color(37, 99, 235);
 
-    // Fonts
-    public static final Font FONT_TITLE   = new Font("Segoe UI", Font.BOLD, 22);
+    // Consistent font sizes - increased
+    public static final Font FONT_TITLE   = new Font("Segoe UI", Font.BOLD, 20);
     public static final Font FONT_HEADING = new Font("Segoe UI", Font.BOLD, 15);
-    public static final Font FONT_BODY    = new Font("Segoe UI", Font.PLAIN, 13);
-    public static final Font FONT_SMALL   = new Font("Segoe UI", Font.PLAIN, 11);
-    public static final Font FONT_BOLD    = new Font("Segoe UI", Font.BOLD, 13);
+    public static final Font FONT_BODY    = new Font("Segoe UI", Font.PLAIN, 14);
+    public static final Font FONT_SMALL   = new Font("Segoe UI", Font.PLAIN, 13);
+    public static final Font FONT_BOLD    = new Font("Segoe UI", Font.BOLD, 14);
 
     private ThemeUtil() {}
 
@@ -62,11 +79,11 @@ public class ThemeUtil {
         JButton btn = new JButton(text);
         btn.setBackground(PRIMARY);
         btn.setForeground(Color.WHITE);
-        btn.setFont(FONT_BOLD);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btn.setFocusPainted(false);
         btn.setBorderPainted(false);
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setPreferredSize(new Dimension(130, 36));
+        btn.setPreferredSize(new Dimension(100, 32));
         btn.setOpaque(true);
         addHoverEffect(btn, PRIMARY, PRIMARY_DARK);
         return btn;
@@ -122,7 +139,7 @@ public class ThemeUtil {
     /** Applies standard header styling to a JTable. */
     public static void styleTable(JTable table) {
         table.setFont(FONT_BODY);
-        table.setRowHeight(34);
+        table.setRowHeight(36);
         table.setGridColor(BORDER_COLOR);
         table.setSelectionBackground(PRIMARY_LIGHT);
         table.setSelectionForeground(TEXT_PRIMARY);
@@ -232,5 +249,31 @@ public class ThemeUtil {
             case "Out of Stock": return new Color(254, 226, 226);
             default:             return new Color(241, 245, 249);
         }
+    }
+
+    /**
+     * Shows a semi-transparent blur overlay behind a dialog.
+     * Returns the overlay JDialog — call overlay.dispose() when the main dialog closes.
+     */
+    public static JDialog showBlurOverlay(Window parentWindow) {
+        JDialog overlay = new JDialog((Frame) null, false);
+        overlay.setUndecorated(true);
+        overlay.setBackground(new Color(0, 0, 0, 0));
+        if (parentWindow != null) {
+            overlay.setSize(parentWindow.getSize());
+            overlay.setLocation(parentWindow.getLocationOnScreen());
+        }
+        JPanel glass = new JPanel() {
+            @Override protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setColor(new Color(0, 0, 0, 140));
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.dispose();
+            }
+        };
+        glass.setOpaque(false);
+        overlay.setContentPane(glass);
+        overlay.setVisible(true);
+        return overlay;
     }
 }
