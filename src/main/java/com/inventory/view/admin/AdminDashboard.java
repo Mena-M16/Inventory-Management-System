@@ -1,8 +1,24 @@
 package com.inventory.view.admin;
 
-import com.inventory.controller.*;
-import com.inventory.model.Transaction;
-import com.inventory.view.components.ThemeUtil;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.List;
+import java.util.Locale;
+
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingWorker;
+import javax.swing.Timer;
+import javax.swing.table.DefaultTableModel;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -10,13 +26,11 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.util.List;
-import java.util.Locale;
+import com.inventory.controller.ProductController;
+import com.inventory.controller.StockController;
+import com.inventory.controller.UserController;
+import com.inventory.model.Transaction;
+import com.inventory.view.components.ThemeUtil;
 
 /**
  * Admin dashboard with KPI cards, recent transactions, and a bar chart.
@@ -52,7 +66,7 @@ public class AdminDashboard extends JPanel {
         lowStockVal       = addKpiCard(cardsPanel, "Low Stock",         "0", ThemeUtil.WARNING);
         outOfStockVal     = addKpiCard(cardsPanel, "Out of Stock",      "0", ThemeUtil.DANGER);
         totalUsersVal     = addKpiCard(cardsPanel, "Total Users",       "0", ThemeUtil.PRIMARY_DARK);
-        totalTxVal        = addKpiCard(cardsPanel, "Transactions",      "0", new Color(103, 58, 183));
+        totalTxVal        = addKpiCard(cardsPanel, "Transactions",      "0", new Color(103, 100, 183));
 
         add(cardsPanel, BorderLayout.NORTH);
 
@@ -65,19 +79,19 @@ public class AdminDashboard extends JPanel {
     }
 
     private JLabel addKpiCard(JPanel parent, String title, String value, Color accent) {
-        JPanel card = new JPanel(new BorderLayout(0, 6));
+        JPanel card = new JPanel(new BorderLayout(0, 8));
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 4, 0, 0, accent),
-            BorderFactory.createEmptyBorder(14, 14, 14, 14)
+            BorderFactory.createMatteBorder(0, 5, 0, 0, accent),
+            BorderFactory.createEmptyBorder(16, 16, 16, 16)
         ));
 
         JLabel titleLbl = new JLabel(title);
-        titleLbl.setFont(ThemeUtil.FONT_SMALL);
+        titleLbl.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         titleLbl.setForeground(ThemeUtil.TEXT_MUTED);
 
         JLabel valueLbl = new JLabel(value);
-        valueLbl.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        valueLbl.setFont(new Font("Segoe UI", Font.BOLD, 26));
         valueLbl.setForeground(accent);
 
         card.add(titleLbl, BorderLayout.NORTH);
